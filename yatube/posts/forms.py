@@ -30,10 +30,10 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ('text',)
         labels = {
-                'text': ('Текст комментария'),
+            'text': ('Текст комментария'),
         }
         text_help = {
-                'text': ('Текст комментария'),
+            'text': ('Текст комментария'),
         }
 
     def __init__(self, *args, **kwargs):
