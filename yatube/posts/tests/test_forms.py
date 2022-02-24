@@ -146,10 +146,16 @@ class PostCreateFormTests(TestCase):
         После успешной отправки комментарий
         появляется на странице поста
         """
-        create_comment = self.user_client.post(
+        test_comment = self.user_client.post(
             self.add_comment,
             data=self.comment,
             follow=True
         )
-        comment = create_comment.context['comments']
-        self.assertEqual(len(comment), 1)
+        created_comment = Comment.objects.latest('pk')
+        comment_field = {
+            created_comment.text: self.comment['text'],
+            created_comment.post: test_comment.context['post'],
+        }
+        for new, original in comment_field.items():
+            with self.subTest(new=new):
+                self.assertEqual(new, original)
