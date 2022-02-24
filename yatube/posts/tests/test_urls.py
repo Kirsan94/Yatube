@@ -47,14 +47,16 @@ class PostURLTests(TestCase):
         """Проверяем наличие страниц для авторизованного пользователя"""
         urls = [
             '/',
+            '/follow/',
             '/create/',
-            '/about/author/',
             '/about/tech/',
+            '/about/author/',
             f'/posts/{self.post.id}/',
-            f'/posts/{self.post.id}/edit/',
             f'/group/{self.group.slug}/',
+            f'/posts/{self.post.id}/edit/',
             f'/profile/{self.user.username}/',
-            '/auth/logout/'
+            '/auth/logout/',
+
         ]
         for url in urls:
             with self.subTest(url=url):
@@ -79,7 +81,9 @@ class PostURLTests(TestCase):
             f'/posts/{self.post.id}/edit/': 'posts/create_post.html',
             f'/group/{self.group.slug}/': 'posts/group_list.html',
             f'/profile/{self.user.username}/': 'posts/profile.html',
-            '/auth/logout/': 'users/logged_out.html'
+            '/missing_page/': 'core/404.html',
+            '/follow/': 'posts/follow.html',
+            '/auth/logout/': 'users/logged_out.html',
         }
         for url, template in urls_templates.items():
             with self.subTest(url=url):

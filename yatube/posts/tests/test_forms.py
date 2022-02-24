@@ -2,7 +2,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from http import HTTPStatus
 
-from ..models import Post, Group, User
+from ..models import Post, Group, User, Comment
 
 
 class PostCreateFormTests(TestCase):
@@ -36,6 +36,10 @@ class PostCreateFormTests(TestCase):
         self.post_detail = reverse('posts:post_detail', kwargs={
             'post_id': f'{self.post.id}'
         })
+        self.add_comment = reverse('posts:add_comment', kwargs={
+            'post_id': f'{self.post.id}'
+        })
+        self.comment = {'text': 'Тестовый комментарий'}
 
     def test_forms_valid_post_creating(self):
         """При отправке валидной формы пост создаётся"""
@@ -122,3 +126,30 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count)
         last_post = Post.objects.latest('id')
         self.assertNotEqual(last_post.text, 'А я не авторизован')
+
+    def test_forms_guest_cant_create_comment(self):
+        """
+        Комментировать посты может
+        только авторизованный пользователь
+        """
+        comments_count = Comment.objects.count()
+        create_comment = self.guest_client.post(
+            self.add_comment,
+            data=self.comment,
+            follow=True
+        )
+        self.assertEqual(create_comment.status_code, HTTPStatus.OK)
+        self.assertEqual(comments_count, Comment.objects.count())
+
+    def test_forms_comment_in_context(self):
+        """
+        После успешной отправки комментарий
+        появляется на странице поста
+        """
+        create_comment = self.user_client.post(
+            self.add_comment,
+            data=self.comment,
+            follow=True
+        )
+        comment = create_comment.context['comments']
+        self.assertEqual(len(comment), 1)

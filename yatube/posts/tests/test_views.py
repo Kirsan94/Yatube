@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.conf import settings
 from http import HTTPStatus
 
-from ..models import Post, Group, User, Comment, Follow
+from ..models import Post, Group, User, Follow
 from ..forms import PostForm
 from ..views import POSTS_COUNT
 
@@ -70,9 +70,6 @@ class PostViewsTests(TestCase):
         self.post_detail = reverse('posts:post_detail', kwargs={
             'post_id': f'{self.post.id}'
         })
-        self.add_comment = reverse('posts:add_comment', kwargs={
-            'post_id': f'{self.post.id}'
-        })
         self.profile = reverse('posts:profile', kwargs={
             'username': f'{self.user.username}'
         })
@@ -89,7 +86,6 @@ class PostViewsTests(TestCase):
         self.profile_unfollow = reverse('posts:profile_unfollow', kwargs={
             'username': f'{self.user.username}'
         })
-        self.comment = {'text': 'Тестовый комментарий'}
 
     def test_views_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -178,33 +174,6 @@ class PostViewsTests(TestCase):
             image=self.uploaded
         )
         self.assertEqual(posts_count + 1, Post.objects.count())
-
-    def test_views_guest_cant_create_comment(self):
-        """
-        Комментировать посты может
-        только авторизованный пользователь
-        """
-        comments_count = Comment.objects.count()
-        create_comment = self.guest_client.post(
-            self.add_comment,
-            data=self.comment,
-            follow=True
-        )
-        self.assertEqual(create_comment.status_code, HTTPStatus.OK)
-        self.assertEqual(comments_count, Comment.objects.count())
-
-    def test_views_comment_in_context(self):
-        """
-        После успешной отправки комментарий
-        появляется на странице поста
-        """
-        create_comment = self.authorized_client.post(
-            self.add_comment,
-            data=self.comment,
-            follow=True
-        )
-        comment = create_comment.context['comments']
-        self.assertEqual(len(comment), 1)
 
     def test_views_user_can_follow_and_unfollow(self):
         """

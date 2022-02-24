@@ -38,7 +38,9 @@ class Post(PubDateModel):
 
     image = models.ImageField(
         upload_to='posts/',
-        blank=True
+        blank=True,
+        verbose_name='Изображение',
+        help_text='Изображение в шапке поста'
     )
 
     def __str__(self):
@@ -78,3 +80,11 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='following'
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_follow'
+            )
+        ]

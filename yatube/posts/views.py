@@ -39,7 +39,7 @@ def profile(request, username):
     paginator = Paginator(user_posts, POSTS_COUNT)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    if author == request.user:
+    if author == request.user and request.user.is_authenticated:
         following = None
     else:
         following = Follow.objects.filter(author=author).exists()
@@ -55,7 +55,7 @@ def post_detail(request, post_id):
     is_author = False
     form = CommentForm(request.POST or None)
     username = request.user
-    post = Post.objects.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     if post.author == username:
         is_author = True
     title = f'Пост: {post.text}'

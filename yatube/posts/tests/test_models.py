@@ -36,13 +36,17 @@ class PostModelTest(TestCase):
         author_verbose = self.post._meta.get_field('author').verbose_name
         group_verbose = self.post._meta.get_field('group').verbose_name
         group_help = self.post._meta.get_field('group').help_text
+        image_verbose = self.post._meta.get_field('image').verbose_name
+        image_help = self.post._meta.get_field('image').help_text
         post_test = {
             text_verbose: 'Текст поста',
             text_help: 'Введите текст поста',
             date_verbose: 'Дата публикации',
             author_verbose: 'Автор',
             group_verbose: 'Группа',
-            group_help: 'Группа, к которой будет относиться пост'
+            group_help: 'Группа, к которой будет относиться пост',
+            image_verbose: 'Изображение',
+            image_help: 'Изображение в шапке поста'
         }
         for field, expected_value in post_test.items():
             with self.subTest(field=field):
