@@ -160,12 +160,12 @@ class PostViewsTests(TestCase):
         pages = [self.index, self.profile, self.group_list]
         for page in pages:
             with self.subTest(page=page):
-                response = self.client.get(page)
+                response = self.authorized_client.get(page)
                 self.assertEqual(
                     response.context['page_obj'][0].image,
                     'posts/small.gif'
                 )
-        response = self.client.get(self.post_detail)
+        response = self.authorized_client.get(self.post_detail)
         self.assertEqual(response.context['post'].image, 'posts/small.gif')
         Post.objects.create(
             text='Тестовый текст поста с картинкой',
@@ -249,8 +249,8 @@ class PostViewsPaginatorTests(TestCase):
         second_page_posts_count = posts_count - self.paginator_length
         for page in pages:
             with self.subTest(page=page):
-                response = self.client.get(page)
-                response2 = self.client.get(page + '?page=2')
+                response = self.authorized_client.get(page)
+                response2 = self.authorized_client.get(page + '?page=2')
                 self.assertEqual(
                     len(response.context['page_obj']),
                     self.paginator_length
